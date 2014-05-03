@@ -11,6 +11,24 @@ package "httpd" do
   action :install
 end
 
+# Hey, I can't make up my mind about whether to use Perl or PHP
+# on this system. :-)
+ruby_block "randomly_choose_language" do
+  block do
+    r = Random.rand
+    if r > 0.5
+      node.run_state['scripting_language'] = 'php'
+    else
+      node.run_state['scripting_language'] = 'perl'
+    end
+  end
+end
+
+package "scripting_language" do
+  package_name lazy { node.run_state['scripting_language'] }
+  action :install
+end
+
 service "httpd" do
   action [ :enable, :start ]
 end
